@@ -1,0 +1,57 @@
+[
+    {
+    "type": "DATE",
+    "name": "report_date",
+    "mode": "NULLABLE"
+    },
+    {
+    "type": "STRING",
+    "name": "isrc",
+    "mode": "NULLABLE"
+    },
+    {
+    "type": "FLOAT",
+    "name": "nf",
+    "mode": "NULLABLE"
+    },
+    {
+    "type": "FLOAT",
+    "name": "f1",
+    "mode": "NULLABLE"
+    },
+    {
+    "type": "FLOAT",
+    "name": "f2",
+    "mode": "NULLABLE"
+    },
+    {
+    "type": "FLOAT",
+    "name": "f3",
+    "mode": "NULLABLE"
+    },
+    {
+    "type": "FLOAT",
+    "name": "f4",
+    "mode": "NULLABLE"
+    },
+    {
+    "type": "FLOAT",
+    "name": "f5",
+    "mode": "NULLABLE"
+    },
+    {
+    "type": "FLOAT",
+    "name": "f6",
+    "mode": "NULLABLE"
+    },
+    {
+    "type": "STRING",
+    "name": "class",
+    "mode": "NULLABLE"
+    },
+    {
+    "type": "FLOAT",
+    "name": "score",
+    "mode": "NULLABLE"
+    }
+    ]
