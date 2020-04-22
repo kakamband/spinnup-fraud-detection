@@ -83,13 +83,6 @@ FROM `umg-data-science.detect_fraud_spinnup.spinnup_artists` as a
 LEFT JOIN `umg-data-science.detect_fraud_spinnup.fraud_grouped` as b
 ON a.artist_id = b.artist_id;
 
---add metadata from FUGA to track level
-CREATE OR REPLACE TABLE `umg-data-science.detect_fraud_spinnup.spinnup_tracks` AS
-SELECT a.*, b.* EXCEPT(upc, isrc)
-FROM `umg-data-science.detect_fraud_spinnup.spinnup_tracks` as a
-LEFT JOIN `umg-spinnup.fuga.sch_products_assets` as b
-ON a.isrc = b.isrc;
-
 --add spotify ids
 CREATE OR REPLACE TABLE `umg-data-science.detect_fraud_spinnup.spinnup_tracks` AS
 select a.*, b.* except(isrc)
@@ -97,7 +90,8 @@ from `umg-data-science.detect_fraud_spinnup.spinnup_tracks` as a
 left join
     (select isrc, MAX(track_id) as spotify_id, 
                   MAX(artist_id) as spotify_artist_id,
-                  MAX(album_id) as spotify_album_id
+                  MAX(album_id) as spotify_album_id,
+                  MAX(album_type) as album_type
     from `umg-data-science.discovar.spotify_tracks_metadata_spinnup` 
     where isrc in (select isrc 
                      from `umg-data-science.detect_fraud_spinnup.spinnup_tracks`
@@ -105,6 +99,13 @@ left join
     group by isrc) as b
 on
    a.isrc = b.isrc;
+
+--add metadata from FUGA to track level
+CREATE OR REPLACE TABLE `umg-data-science.detect_fraud_spinnup.spinnup_tracks` AS
+SELECT a.*, b.* EXCEPT(upc, isrc)
+FROM `umg-data-science.detect_fraud_spinnup.spinnup_tracks` as a
+LEFT JOIN `umg-spinnup.fuga.sch_products_assets` as b
+ON a.isrc = b.isrc;
 
 --add audio features to track level
 CREATE OR REPLACE TABLE `umg-data-science.detect_fraud_spinnup.spinnup_tracks` AS
