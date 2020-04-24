@@ -1,5 +1,10 @@
 import pandas as pd
 import numpy as np
+from sklearn.cluster import KMeans
+from sklearn import metrics 
+from scipy.spatial.distance import cdist 
+import seaborn as sns
+import matplotlib.pyplot as plt
 from math import sqrt
 
 # drops low variance features based on a variance threshold
