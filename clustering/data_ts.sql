@@ -1,13 +1,14 @@
 declare sday, end_date date;
-declare weekly_streams, thres, thres_tracks int64;
-set end_date = '2020-03-30';
+declare weekly_streams, thres, thres_accounts, thres_tracks int64;
+set end_date = '2020-04-20';
 set sday = date_sub(end_date, interval 28 day);
 set weekly_streams = 2000;
 set thres = 50;
-set thres_tracks = 10;
+set thres_accounts = 5;
+set thres_tracks = 20;
 
-create or replace table`umg-data-science.detect_fraud_spinnup.f1_tracks28days` (
-`stream_date` date,
+create or replace table`umg-data-science.detect_fraud_spinnup.f1_tracks_ts` (
+`report_date` date,
 `isrc` string,
 `streams` int64,
 `users` int64,
@@ -31,18 +32,18 @@ create or replace table`umg-data-science.detect_fraud_spinnup.f1_tracks28days` (
 
 while (sday < end_date) 
 do
-	create or replace table `umg-data-science.detect_fraud_spinnup.f1_tracks28days` as
+	create or replace table `umg-data-science.detect_fraud_spinnup.f1_tracks_ts` as
   with main_query as (
 		with 
 		onday_tracks as (select isrc 
 						from `umg-spinnup.spotify.spotify_trends` 
-						where stream_date = sday
+						where report_date = sday
 						group by isrc),
 
 		past_week_streams as (select isrc, sum(number_of_streams) as streams
 							from (select isrc, number_of_streams
 									from `umg-spinnup.spotify.spotify_trends` 
-									where stream_date between date_sub(sday, interval 6 day) and sday
+									where report_date between date_sub(sday, interval 6 day) and sday
 									and isrc in (select isrc from onday_tracks))
 							group by isrc),
 							
@@ -53,14 +54,18 @@ do
 					
 		f1_streaming as (select *
 						from `umg-spinnup.spotify.spotify_trends`
-						where stream_date = sday
+						where report_date = sday
 						and isrc in (select isrc from f1_tracks)),
             
     focused_users as (select user_id
-						          from (select user_id, count(distinct isrc) as num_tracks
-                            from f1_streaming
-                            group by user_id)
-						          where num_tracks >= thres_tracks
+                          from (select user_id, count(distinct product_id) as num_sp_accounts, count(distinct isrc) as num_sp_tracks
+                                from
+                                  (select a.user_id, a.isrc, b.product_id
+                                  from f1_streaming as a
+                                  left join `umg-data-science.detect_fraud_spinnup.spinnup_tracks` as b
+                                  on a.isrc = b.isrc)
+                                group by user_id)
+						          where num_sp_accounts >= thres_accounts and num_sp_tracks >= thres_tracks
 						          group by user_id),
 						
 		fraud_tracks as (select isrc
@@ -117,11 +122,11 @@ do
 		audio as (select isrc, duration, instrumentalness from `umg-data-science.detect_fraud_spinnup.spinnup_tracks` 
 		where isrc in (select isrc from f1_tracks))
 
-		select * from `umg-data-science.detect_fraud_spinnup.f1_tracks28days`
+		select * from `umg-data-science.detect_fraud_spinnup.f1_tracks_ts`
 
 		union all
 
-		select sday as stream_date,
+		select sday as report_date,
 			a.isrc, a.streams,
 						a.users, 
 						a.streams_per_user,
