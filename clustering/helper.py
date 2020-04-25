@@ -44,45 +44,34 @@ def euclidean_distance(v1, v2):
         distance += (v1[i] - v2[i])**2
     return np.sqrt(distance)
 
-# visualisation of scores for choosing the number of clusters
-def optimal_k(max_num_clusters, data):    
-    distortions = [] 
-    inertias = [] 
-    mapping1 = {} 
-    mapping2 = {} 
-    K = range(1,max_num_clusters+1) 
-    X = data
-    for k in K: 
-        #Building and fitting the model 
-        kmeanModel = KMeans(
-                            n_clusters=k, init='random',
-                            n_init=25, max_iter=1000,
-                            random_state=2
-                            )
-        kmeanModel.fit(X)     
-
-        distortions.append(sum(np.min(cdist(X, kmeanModel.cluster_centers_, 
-                          'euclidean'),axis=1)) / X.shape[0]) 
-        inertias.append(kmeanModel.inertia_) 
-
-        mapping1[k] = sum(np.min(cdist(X, kmeanModel.cluster_centers_, 
-                     'euclidean'),axis=1)) / X.shape[0] 
-        mapping2[k] = kmeanModel.inertia_ 
-
-    for key,val in mapping1.items(): 
-        print(str(key)+' : '+str(val)) 
-
-    plt.plot(K, distortions, 'bx-') 
-    plt.xlabel('Values of K') 
-    plt.ylabel('Distortion') 
-    plt.title('The Elbow Method using Distortion') 
-    plt.show() 
-
-    for key,val in mapping2.items(): 
-        print(str(key)+' : '+str(val)) 
-
-    plt.plot(K, inertias, 'bx-') 
-    plt.xlabel('Values of K') 
-    plt.ylabel('Inertia') 
-    plt.title('The Elbow Method using Inertia') 
-    plt.show()
+# visualisation of scores for choosing the number of clusters using four different methods to choose from
+def optimal_k(max_num_clusters, data, method=None):
+    
+    if method != None:
+        scores = []
+        K = range(2,max_num_clusters+1) 
+        X = data
+        for k in K: 
+            #Building and fitting the model 
+            kmeanModel = KMeans(
+                                n_clusters=k, init='random',
+                                n_init=25, max_iter=1000,
+                                random_state=2
+                                )
+            kmeanModel.fit(X)
+            if method == 'inertia':
+                scores.append(kmeanModel.inertia_)
+            elif method == 'distortion':
+                scores.append(sum(np.min(cdist(X, kmeanModel.cluster_centers_, 'euclidean'),axis=1)) / X.shape[0])
+            elif method == 'silhouette':
+                scores.append(metrics.silhouette_score(X, kmeanModel.labels_, metric = 'euclidean'))
+            elif method == 'ch':
+                scores.append(metrics.calinski_harabasz_score(X, kmeanModel.labels_))
+        plt.plot(K, scores, 'bx-') 
+        plt.xlabel('Values of K') 
+        plt.ylabel('Score') 
+        plt.title('Method - {}'.format(method)) 
+        plt.show() 
+        
+    elif method == None:
+        print('Please choose the type of method for finding the optimal number of clusters\n- inertia\n- distortion\n- silhouette\n- ch')
