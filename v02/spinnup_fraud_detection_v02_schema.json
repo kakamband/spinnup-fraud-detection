@@ -1,0 +1,22 @@
+[
+    {
+    "type": "DATE",
+    "name": "report_date",
+    "mode": "NULLABLE"
+    },
+    {
+    "type": "STRING",
+    "name": "isrc",
+    "mode": "NULLABLE"
+    },
+    {
+    "type": "STRING",
+    "name": "class",
+    "mode": "NULLABLE"
+    },
+    {
+    "type": "STRING",
+    "name": "category",
+    "mode": "NULLABLE"
+    }
+]

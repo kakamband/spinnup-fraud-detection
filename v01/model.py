@@ -24,7 +24,7 @@ def drop_skewed(df, log=True):
 # computes the euclidean distance between two 1D vectors
 def euclidean_distance(v1, v2):
     distance = 0.0
-    for i in range(len(v1)-1):
+    for i in range(len(v1)):
         distance += (v1[i] - v2[i])**2
     return np.sqrt(distance)
 
