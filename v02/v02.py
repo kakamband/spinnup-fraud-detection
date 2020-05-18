@@ -75,8 +75,7 @@ groups_dict = {'f1_1': [0.9, 0.0, 0.0, 0.0, 1.0],
  'f6_3': [0.9, 0.0, 0.1, 0.6, 0.2],
  'f6_4': [0.1, 0.1, 0.1, 0.3, 0.5]}
 
-groups_dict2 = {
-    {'f1_2': 'non-fraud',
+groups_dict2 =  {'f1_2': 'non-fraud',
  'f2_2': 'non-fraud',
  'f2_6': 'non-fraud',
  'f5_7': 'non-fraud',

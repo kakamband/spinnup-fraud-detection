@@ -132,7 +132,8 @@ with
                 inner join `umg-data-science.detect_fraud_spinnup.spinnup_tracks` as b
                 on a.isrc=b.isrc),
 
-        dataset as (Date('{{ ds }}') as report_date,
+        dataset as (select
+                Date('{{ ds }}') as report_date,
                 a.isrc, 
                 a.streams,
                 a.users,
